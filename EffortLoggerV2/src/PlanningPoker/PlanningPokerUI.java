@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import EffortLoggerHomePage.EffortLoggerHomePage;
+import EffortLoggerViewData.EffortLoggerViewData;
 
 public class PlanningPokerUI extends Application {
 
@@ -60,9 +61,13 @@ public class PlanningPokerUI extends Application {
             }
         });
 
-        root.getChildren().addAll(usersField, projectField, startButton);
+        Button viewDataButton = new Button("View Data");
+        viewDataButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white;");
+        viewDataButton.setOnAction(e -> openEffortLoggerViewData(primaryStage));
 
-        Scene scene = new Scene(root, 400, 200);
+        root.getChildren().addAll(usersField, projectField, startButton, viewDataButton);
+
+        Scene scene = new Scene(root, 400, 250);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -195,4 +200,14 @@ public class PlanningPokerUI extends Application {
         // Close the planning poker stage
         primaryStage.close();
     }
+
+    private void openEffortLoggerViewData(Stage primaryStage) {
+        EffortLoggerViewData effortLoggerViewData = new EffortLoggerViewData();
+        Stage viewDataStage = new Stage();
+        viewDataStage.setTitle("EffortLogger View Data");
+
+        // Call the start method of EffortLoggerViewData
+        effortLoggerViewData.start(viewDataStage);
+    
+}
 }
