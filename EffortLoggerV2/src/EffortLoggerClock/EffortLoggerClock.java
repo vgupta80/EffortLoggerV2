@@ -105,12 +105,14 @@ public class EffortLoggerClock extends Application {
     private void stopTimer(Stage primaryStage, Label timerLabel) {
         if (timerRunning) {
             timerRunning = false;
-        } else {
             // Reset the timer
             startTime = 0;
             elapsedTime = 0;
             taskNamePrompted = false;
             updateTimerLabel(timerLabel, elapsedTime);
+        } else {
+            // Prompt for task name when Stop is clicked without starting the timer
+            promptForTaskName(primaryStage);
         }
     }
 
