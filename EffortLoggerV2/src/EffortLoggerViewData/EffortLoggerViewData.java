@@ -7,13 +7,13 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import models.TaskData;
@@ -27,23 +27,30 @@ import EffortLoggerHomePage.EffortLoggerHomePage;
 public class EffortLoggerViewData extends Application {
 
     private static final String CSV_FILE_PATH = "task_data.csv";
+    public Scene scene;
 
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("EffortLogger View Data");
-        
+
         TableView<TaskData> table = createTableView();
+        ScrollPane scrollPane = new ScrollPane(table);
+        scrollPane.setMinSize(1000, 800);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setFitToWidth((true));
+
         Button backButton = new Button("Back");
         backButton.setStyle("-fx-background-color: #FF0000; -fx-text-fill: white;");
         backButton.setOnAction(e -> openEffortLoggerHomePage(primaryStage));
+
         BorderPane layout = new BorderPane();
-        layout.setCenter(table);
+        layout.setCenter(scrollPane);
         layout.setTop(backButton);
 
         // Set background color for the entire scene
         layout.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, null)));
 
-        Scene scene = new Scene(layout, 600, 400);
+        scene = new Scene(layout, 1000, 800);
         primaryStage.setScene(scene);
 
         // Load task data into the table
@@ -86,7 +93,7 @@ public class EffortLoggerViewData extends Application {
 
         table.setItems(taskDataList);
     }
-    
+
     private void openEffortLoggerHomePage(Stage primaryStage) {
         EffortLoggerHomePage effortLoggerHomePage = new EffortLoggerHomePage();
         Stage clockStage = new Stage();
@@ -98,4 +105,5 @@ public class EffortLoggerViewData extends Application {
         // Close the home page stage
         primaryStage.close();
     }
+    
 }

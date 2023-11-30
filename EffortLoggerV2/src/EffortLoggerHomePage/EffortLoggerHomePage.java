@@ -2,6 +2,7 @@ package EffortLoggerHomePage;
 
 import EffortLoggerClock.EffortLoggerClock;
 import EffortLoggerViewData.EffortLoggerViewData;
+import PlanningPoker.PlanningPokerUI;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -36,7 +37,7 @@ public class EffortLoggerHomePage extends Application {
         gridPane.setHgap(30);
 
         Button planningPokerButton = createStyledButton("Planning Poker", Color.rgb(244, 121, 33));
-        planningPokerButton.setOnAction(e -> openPlanningPoker());
+        planningPokerButton.setOnAction(e -> openPlanningPoker(primaryStage));
 
         Button effortLoggerClockButton = createStyledButton("EffortLogger Clock", Color.rgb(66, 134, 244));
         effortLoggerClockButton.setOnAction(e -> openEffortLoggerClock(primaryStage));
@@ -62,10 +63,16 @@ public class EffortLoggerHomePage extends Application {
         return button;
     }
 
-    private void openPlanningPoker() {
-       // PlanningPoker planningPoker = new PlanningPoker();
-      //  Stage planningPokerStage = new Stage();
-       // planningPoker.start(planningPokerStage);
+    private void openPlanningPoker(Stage primaryStage) {
+    	PlanningPokerUI planningPokerUI = new PlanningPokerUI();
+        Stage clockStage = new Stage();
+        clockStage.setTitle("Planning Poker");
+
+        // Call the start method of EffortLoggerClock
+        
+
+        // Close the home page stage
+        primaryStage.close();
     }
 
     private void openEffortLoggerClock(Stage primaryStage) {
