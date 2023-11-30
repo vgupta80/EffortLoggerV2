@@ -1,5 +1,7 @@
 package EffortLoggerHomePage;
 
+import EffortLoggerClock.EffortLoggerClock;
+import EffortLoggerViewData.EffortLoggerViewData;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -22,14 +24,14 @@ public class EffortLoggerHomePage extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Effort Logger Home Page");
 
-        GridPane gridPane = createHomePage();
+        GridPane gridPane = createHomePage(primaryStage);
 
-        Scene scene = new Scene(gridPane, 600, 400);
+        Scene scene = new Scene(gridPane, 800, 300);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    private GridPane createHomePage() {
+    private GridPane createHomePage(Stage primaryStage) {
         GridPane gridPane = new GridPane();
         gridPane.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
         gridPane.setPadding(new Insets(40, 40, 40, 40));
@@ -40,10 +42,10 @@ public class EffortLoggerHomePage extends Application {
         planningPokerButton.setOnAction(e -> openPlanningPoker());
 
         Button effortLoggerClockButton = createStyledButton("EffortLogger Clock", Color.rgb(66, 134, 244));
-        effortLoggerClockButton.setOnAction(e -> openEffortLoggerClock());
+        effortLoggerClockButton.setOnAction(e -> openEffortLoggerClock(primaryStage));
 
         Button effortLoggerViewDataButton = createStyledButton("EffortLogger View Data", Color.rgb(46, 204, 113));
-        effortLoggerViewDataButton.setOnAction(e -> openEffortLoggerViewData());
+        effortLoggerViewDataButton.setOnAction(e -> openEffortLoggerViewData(primaryStage));
 
         gridPane.add(planningPokerButton, 0, 0);
         gridPane.add(effortLoggerClockButton, 1, 0);
@@ -64,17 +66,33 @@ public class EffortLoggerHomePage extends Application {
     }
 
     private void openPlanningPoker() {
-        // Add your code to open Planning Poker window
-        System.out.println("Opening Planning Poker");
+       // PlanningPoker planningPoker = new PlanningPoker();
+      //  Stage planningPokerStage = new Stage();
+       // planningPoker.start(planningPokerStage);
     }
 
-    private void openEffortLoggerClock() {
-        // Add your code to open EffortLogger Clock window
-        System.out.println("Opening EffortLogger Clock");
+    private void openEffortLoggerClock(Stage primaryStage) {
+        EffortLoggerClock effortLoggerClock = new EffortLoggerClock();
+        Stage clockStage = new Stage();
+        clockStage.setTitle("EffortLogger Clock");
+
+        // Call the start method of EffortLoggerClock
+        effortLoggerClock.start(clockStage);
+
+        // Close the home page stage
+        primaryStage.close();
     }
 
-    private void openEffortLoggerViewData() {
+    private void openEffortLoggerViewData(Stage primaryStage) {
         // Add your code to open EffortLogger View Data window
-        System.out.println("Opening EffortLogger View Data");
+    	 EffortLoggerViewData effortLoggerViewData = new EffortLoggerViewData();
+         Stage clockStage = new Stage();
+         clockStage.setTitle("EffortLogger View data");
+
+         // Call the start method of EffortLoggerClock
+         effortLoggerViewData.start(clockStage);
+
+         // Close the home page stage
+         primaryStage.close();
     }
 }

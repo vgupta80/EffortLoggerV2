@@ -16,6 +16,10 @@ import java.io.*;
 import java.util.List;
 import java.util.Objects;
 
+import EffortLoggerHomePage.EffortLoggerHomePage;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+
 public class LoginUI extends Application {
 
     private static final String CSV_FILE_PATH = "users.csv";
@@ -68,11 +72,28 @@ public class LoginUI extends Application {
             if (user.getUsername().equals(enteredUsername) &&
                     Objects.hash(enteredPassword) == user.getHashedPassword()) {
                 showAlert("Login Successful", "Welcome, " + enteredUsername + "!");
+                openEffortLoggerHomePage(primaryStage);
                 return;
             }
         }
 
         showAlert("Login Failed", "Invalid username or password. Please try again.");
+    }
+
+    private void openEffortLoggerHomePage(Stage primaryStage) {
+        try {
+            EffortLoggerHomePage effortLoggerHomePage = new EffortLoggerHomePage();
+            Stage homeStage = new Stage();
+            homeStage.setTitle("Effort Logger Home Page");
+
+            // Call the start method of EffortLoggerHomePage
+            effortLoggerHomePage.start(homeStage);
+
+            // Close the login stage
+            primaryStage.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void showAlert(String title, String content) {

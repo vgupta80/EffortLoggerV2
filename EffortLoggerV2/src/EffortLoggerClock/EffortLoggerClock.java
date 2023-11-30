@@ -4,6 +4,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -17,10 +18,12 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import models.TaskData;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
 
 public class EffortLoggerClock extends Application {
 
@@ -105,13 +108,15 @@ public class EffortLoggerClock extends Application {
             startTime = 0;
 
             // Prompt for task name when Stop is clicked after starting the timer
-            promptForTaskNameAndWriteToCSV(primaryStage);
+            TaskData taskData = promptForTaskNameAndCreateTaskData(primaryStage);
+            writeTaskDataToCSV(taskData);
 
             taskName = "";
             updateTimerLabel(timerLabel, elapsedTime);
         } else {
             // Prompt for task name when Stop is clicked without starting the timer
-            promptForTaskNameAndWriteToCSV(primaryStage);
+            TaskData taskData = promptForTaskNameAndCreateTaskData(primaryStage);
+            writeTaskDataToCSV(taskData);
         }
 
         // Reset the timer to 0
@@ -131,13 +136,20 @@ public class EffortLoggerClock extends Application {
         timerLabel.setText(time);
     }
 
-    private void promptForTaskNameAndWriteToCSV(Stage primaryStage) {
-        promptForTaskName(primaryStage);
-        // Write task data to CSV file
-        writeTaskDataToCSV(taskName, elapsedTime);
+    private TaskData promptForTaskNameAndCreateTaskData(Stage primaryStage) {
+        String taskName = promptForTaskName(primaryStage);
+        String formattedTime = formatTime((int) (elapsedTime / 1000));
+        return new TaskData(taskName, formattedTime);
     }
 
-    private void promptForTaskName(Stage primaryStage) {
+    private String formatTime(int totalSeconds) {
+        int seconds = totalSeconds % 60;
+        int minutes = (totalSeconds / 60) % 60;
+        int hours = totalSeconds / 3600;
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
+    private String promptForTaskName(Stage primaryStage) {
         Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.WINDOW_MODAL);
         dialogStage.initOwner(primaryStage);
@@ -164,12 +176,14 @@ public class EffortLoggerClock extends Application {
         dialogVBox.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
 
         dialogStage.showAndWait();
+
+        return taskName;
     }
 
-    private void writeTaskDataToCSV(String taskName, long elapsedTime) {
+    private void writeTaskDataToCSV(TaskData taskData) {
         try (Writer writer = new FileWriter(CSV_FILE_PATH, true)) {
             // Append task data to CSV file
-            writer.append(taskName).append(",").append(String.valueOf(elapsedTime / (1000 * 60))).append("\n");
+            writer.append(taskData.getTaskName()).append(",").append(taskData.getFormattedTime()).append("\n");
         } catch (IOException e) {
             e.printStackTrace();
             // Handle the exception gracefully (e.g., log the error or display an alert)
