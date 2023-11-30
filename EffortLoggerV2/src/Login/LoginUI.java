@@ -4,50 +4,36 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import java.io.*;
+import java.util.List;
+import java.util.Objects;
 
 public class LoginUI extends Application {
 
-    private static final String LOGIN_PAGE = "login";
-    private static final String CREATE_ACCOUNT_PAGE = "createAccount";
-
-    private String currentPage = LOGIN_PAGE;
-    private StackPane stackPane;
-
-    public static void main(String[] args) {
-        launch(args);
-    }
+    private static final String CSV_FILE_PATH = "users.csv";
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Enhanced Login Page");
+        primaryStage.setTitle("Login Page");
 
-        // Create pages
-        GridPane loginPage = createLoginPage();
-        GridPane createAccountPage = createCreateAccountPage();
+        GridPane gridPane = createLoginPage(primaryStage);
 
-        // Create a stack pane to hold pages
-        stackPane = new StackPane(loginPage, createAccountPage);
-
-        // Show the initial page
-        showPage(stackPane, LOGIN_PAGE);
-
-        // Create a scene and set it to the stage
-        Scene scene = new Scene(stackPane, 300, 200);
-
-        // Set background colors for pages
-        loginPage.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
-        createAccountPage.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
-
+        Scene scene = new Scene(gridPane, 300, 200);
         primaryStage.setScene(scene);
-
-        // Show the stage
         primaryStage.show();
     }
 
-    private GridPane createLoginPage() {
+    private GridPane createLoginPage(Stage primaryStage) {
         GridPane gridPane = new GridPane();
+        gridPane.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
         gridPane.setPadding(new Insets(20, 20, 20, 20));
         gridPane.setVgap(10);
         gridPane.setHgap(10);
@@ -59,6 +45,9 @@ public class LoginUI extends Application {
         Button loginButton = new Button("Login");
         Button createAccountButton = new Button("Create Account");
 
+        loginButton.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+        createAccountButton.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+
         gridPane.add(usernameLabel, 0, 0);
         gridPane.add(usernameField, 1, 0);
         gridPane.add(passwordLabel, 0, 1);
@@ -66,49 +55,24 @@ public class LoginUI extends Application {
         gridPane.add(loginButton, 1, 2);
         gridPane.add(createAccountButton, 1, 3);
 
-        loginButton.setOnAction(e -> handleLogin(usernameField.getText(), passwordField.getText()));
-        createAccountButton.setOnAction(e -> showPage(stackPane, CREATE_ACCOUNT_PAGE));
+        loginButton.setOnAction(e -> handleLogin(primaryStage, usernameField.getText(), passwordField.getText()));
+        createAccountButton.setOnAction(e -> openCreateAccountWindow());
 
         return gridPane;
     }
 
-    private GridPane createCreateAccountPage() {
-        GridPane gridPane = new GridPane();
-        gridPane.setPadding(new Insets(20, 20, 20, 20));
-        gridPane.setVgap(10);
-        gridPane.setHgap(10);
+    private void handleLogin(Stage primaryStage, String enteredUsername, String enteredPassword) {
+        List<User> users = CsvHandler.readUsersFromCsv(CSV_FILE_PATH);
 
-        Label newUsernameLabel = new Label("New Username:");
-        TextField newUsernameField = new TextField();
-        Label newPasswordLabel = new Label("New Password:");
-        PasswordField newPasswordField = new PasswordField();
-        Button createAccountButton = new Button("Create Account");
-
-        gridPane.add(newUsernameLabel, 0, 0);
-        gridPane.add(newUsernameField, 1, 0);
-        gridPane.add(newPasswordLabel, 0, 1);
-        gridPane.add(newPasswordField, 1, 1);
-        gridPane.add(createAccountButton, 1, 2);
-
-        createAccountButton.setOnAction(e -> handleCreateAccount(newUsernameField.getText(), newPasswordField.getText()));
-
-        return gridPane;
-    }
-
-    private void handleLogin(String username, String password) {
-        // Basic login validation
-        if ("user".equals(username) && "pass".equals(password)) {
-            showAlert("Login Successful", "Welcome, " + username + "!");
-        } else {
-            showAlert("Login Failed", "Invalid username or password. Please try again.");
+        for (User user : users) {
+            if (user.getUsername().equals(enteredUsername) &&
+                    Objects.hash(enteredPassword) == user.getHashedPassword()) {
+                showAlert("Login Successful", "Welcome, " + enteredUsername + "!");
+                return;
+            }
         }
-    }
 
-    private void handleCreateAccount(String newUsername, String newPassword) {
-        // Add your logic for creating a new account
-        showAlert("Create Account", "New account created:\nUsername: " + newUsername + "\nPassword: " + newPassword);
-        // Optionally, navigate back to the login page after creating a new account
-        showPage(stackPane, LOGIN_PAGE);
+        showAlert("Login Failed", "Invalid username or password. Please try again.");
     }
 
     private void showAlert(String title, String content) {
@@ -119,19 +83,105 @@ public class LoginUI extends Application {
         alert.showAndWait();
     }
 
-    private void showPage(StackPane stackPane, String pageName) {
-        stackPane.getChildren().forEach(node -> node.setVisible(false));
+    private void openCreateAccountWindow() {
+        Stage createAccountStage = new Stage();
+        createAccountStage.setTitle("Create Account");
 
-        switch (pageName) {
-            case LOGIN_PAGE:
-                stackPane.getChildren().get(0).setVisible(true);
-                break;
-            case CREATE_ACCOUNT_PAGE:
-                stackPane.getChildren().get(1).setVisible(true);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid page name: " + pageName);
+        GridPane gridPane = createCreateAccountPage(createAccountStage);
+
+        Scene scene = new Scene(gridPane, 300, 200);
+        createAccountStage.setScene(scene);
+        createAccountStage.initModality(Modality.WINDOW_MODAL);
+        createAccountStage.show();
+    }
+
+    private GridPane createCreateAccountPage(Stage createAccountStage) {
+        GridPane gridPane = new GridPane();
+        gridPane.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+        gridPane.setPadding(new Insets(20, 20, 20, 20));
+        gridPane.setVgap(10);
+        gridPane.setHgap(10);
+
+        Label usernameLabel = new Label("Username:");
+        TextField usernameField = new TextField();
+        Label passwordLabel = new Label("Password:");
+        PasswordField passwordField = new PasswordField();
+        Button createAccountButton = new Button("Create Account");
+
+        createAccountButton.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        gridPane.add(usernameLabel, 0, 0);
+        gridPane.add(usernameField, 1, 0);
+        gridPane.add(passwordLabel, 0, 1);
+        gridPane.add(passwordField, 1, 1);
+        gridPane.add(createAccountButton, 1, 2);
+
+        createAccountButton.setOnAction(e -> handleCreateAccount(createAccountStage, usernameField.getText(), passwordField.getText()));
+
+        return gridPane;
+    }
+
+    private void handleCreateAccount(Stage createAccountStage, String newUsername, String newPassword) {
+        User newUser = new User(newUsername, newPassword);
+        CsvHandler.saveUserToCsv(newUser, CSV_FILE_PATH);
+
+        showAlert("Account Created", "New account created:\nUsername: " + newUsername);
+
+        createAccountStage.close();
+    }
+
+    static class User implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        private String username;
+        private int hashedPassword;
+
+        public User(String username, String password) {
+            this.username = username;
+            this.hashedPassword = Objects.hash(password);
         }
-        currentPage = pageName;
+
+        public String getUsername() {
+            return username;
+        }
+
+        public int getHashedPassword() {
+            return hashedPassword;
+        }
+    }
+
+    static class CsvHandler {
+        public static void saveUserToCsv(User user, String filePath) {
+            List<User> users = readUsersFromCsv(filePath);
+            users.add(user);
+            writeUsersToCsv(users, filePath);
+        }
+
+        public static List<User> readUsersFromCsv(String filePath) {
+            List<User> users = null;
+
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filePath))) {
+                users = (List<User>) ois.readObject();
+            } catch (FileNotFoundException e) {
+                // File doesn't exist, create a new list
+                users = new java.util.ArrayList<>();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            return users;
+        }
+
+        public static void writeUsersToCsv(List<User> users, String filePath) {
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath))) {
+                oos.writeObject(users);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }
