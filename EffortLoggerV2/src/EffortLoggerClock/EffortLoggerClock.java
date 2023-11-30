@@ -18,13 +18,18 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+
 public class EffortLoggerClock extends Application {
 
     private long startTime = 0;
     private boolean timerRunning = false;
     private long elapsedTime = 0;
-    private boolean taskNamePrompted = false;
     private String taskName = "";
+
+    private static final String CSV_FILE_PATH = "task_data.csv";
 
     public static void main(String[] args) {
         launch(args);
@@ -46,7 +51,7 @@ public class EffortLoggerClock extends Application {
         pauseButton.setStyle("-fx-background-color: #FFC107; -fx-text-fill: white;");
         stopButton.setStyle("-fx-background-color: #E57373; -fx-text-fill: white;");
 
-        startButton.setOnAction(e -> startTimer(primaryStage, timerLabel));
+        startButton.setOnAction(e -> startTimer(timerLabel));
         pauseButton.setOnAction(e -> pauseTimer());
         stopButton.setOnAction(e -> stopTimer(primaryStage, timerLabel));
 
@@ -68,19 +73,9 @@ public class EffortLoggerClock extends Application {
         primaryStage.show();
     }
 
-    private void startTimer(Stage primaryStage, Label timerLabel) {
+    private void startTimer(Label timerLabel) {
         if (!timerRunning) {
-            if (!taskNamePrompted) {
-                // Prompt for task name only once after the first "Start" click
-                taskNamePrompted = true;
-                promptForTaskName(primaryStage);
-            }
-
-            if (elapsedTime == 0) {
-                startTime = System.currentTimeMillis();
-            } else {
-                startTime = System.currentTimeMillis() - elapsedTime;
-            }
+            startTime = System.currentTimeMillis() - elapsedTime;
 
             timerRunning = true;
 
@@ -105,15 +100,23 @@ public class EffortLoggerClock extends Application {
     private void stopTimer(Stage primaryStage, Label timerLabel) {
         if (timerRunning) {
             timerRunning = false;
-            // Reset the timer
+            // Stop the timer
+            elapsedTime = System.currentTimeMillis() - startTime;
             startTime = 0;
-            elapsedTime = 0;
-            taskNamePrompted = false;
+
+            // Prompt for task name when Stop is clicked after starting the timer
+            promptForTaskNameAndWriteToCSV(primaryStage);
+
+            taskName = "";
             updateTimerLabel(timerLabel, elapsedTime);
         } else {
             // Prompt for task name when Stop is clicked without starting the timer
-            promptForTaskName(primaryStage);
+            promptForTaskNameAndWriteToCSV(primaryStage);
         }
+
+        // Reset the timer to 0
+        elapsedTime = 0;
+        updateTimerLabel(timerLabel, elapsedTime);
     }
 
     private void updateTimerLabel(Label timerLabel, long elapsedTime) {
@@ -126,6 +129,12 @@ public class EffortLoggerClock extends Application {
 
         String time = String.format("%02d:%02d:%02d", hours, minutes, seconds);
         timerLabel.setText(time);
+    }
+
+    private void promptForTaskNameAndWriteToCSV(Stage primaryStage) {
+        promptForTaskName(primaryStage);
+        // Write task data to CSV file
+        writeTaskDataToCSV(taskName, elapsedTime);
     }
 
     private void promptForTaskName(Stage primaryStage) {
@@ -155,5 +164,15 @@ public class EffortLoggerClock extends Application {
         dialogVBox.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
 
         dialogStage.showAndWait();
+    }
+
+    private void writeTaskDataToCSV(String taskName, long elapsedTime) {
+        try (Writer writer = new FileWriter(CSV_FILE_PATH, true)) {
+            // Append task data to CSV file
+            writer.append(taskName).append(",").append(String.valueOf(elapsedTime / (1000 * 60))).append("\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle the exception gracefully (e.g., log the error or display an alert)
+        }
     }
 }
