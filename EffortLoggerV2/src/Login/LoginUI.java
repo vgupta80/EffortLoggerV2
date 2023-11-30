@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Objects;
 
 import EffortLoggerHomePage.EffortLoggerHomePage;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 
 public class LoginUI extends Application {
 

@@ -28,10 +28,6 @@ public class EffortLoggerViewData extends Application {
 
     private static final String CSV_FILE_PATH = "task_data.csv";
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("EffortLogger View Data");
