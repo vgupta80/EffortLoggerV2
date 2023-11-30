@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 
+import EffortLoggerHomePage.EffortLoggerHomePage;
+
 public class EffortLoggerClock extends Application {
 
     private long startTime = 0;
@@ -40,7 +42,7 @@ public class EffortLoggerClock extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Enhanced EffortLogger Clock");
+        primaryStage.setTitle("EffortLogger Clock");
 
         Label timerLabel = new Label("00:00:00");
         timerLabel.setStyle("-fx-font-size: 3em;");
@@ -48,29 +50,39 @@ public class EffortLoggerClock extends Application {
         Button startButton = new Button("Start");
         Button pauseButton = new Button("Pause");
         Button stopButton = new Button("Stop");
+        Button backButton = new Button("Back");
+       
+
 
         // Style buttons with background color
         startButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
         pauseButton.setStyle("-fx-background-color: #FFC107; -fx-text-fill: white;");
         stopButton.setStyle("-fx-background-color: #E57373; -fx-text-fill: white;");
+        backButton.setStyle("-fx-background-color: #FF0000; -fx-text-fill: white;");
 
         startButton.setOnAction(e -> startTimer(timerLabel));
         pauseButton.setOnAction(e -> pauseTimer());
         stopButton.setOnAction(e -> stopTimer(primaryStage, timerLabel));
+        backButton.setOnAction(e -> openEffortLoggerHomePage(primaryStage));
 
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER);
         buttonBox.getChildren().addAll(startButton, pauseButton, stopButton);
+        
+        VBox backButtonBox = new VBox(5);
+        backButtonBox.setAlignment(Pos.CENTER_RIGHT);
+        backButtonBox.getChildren().addAll(backButton);
 
-        BorderPane layout = new BorderPane();
-        layout.setCenter(timerLabel);
-        layout.setBottom(buttonBox);
+        BorderPane layout1 = new BorderPane();
+        layout1.setCenter(timerLabel);
+        layout1.setBottom(buttonBox);
+        layout1.setTop(backButtonBox);
         BorderPane.setAlignment(timerLabel, Pos.CENTER);
 
         // Set background color for the entire scene
-        layout.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, null)));
+        layout1.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, null)));
 
-        Scene scene = new Scene(layout, 600, 400);
+        Scene scene = new Scene(layout1, 600, 400);
         primaryStage.setScene(scene);
 
         primaryStage.show();
@@ -189,4 +201,18 @@ public class EffortLoggerClock extends Application {
             // Handle the exception gracefully (e.g., log the error or display an alert)
         }
     }
+    
+    private void openEffortLoggerHomePage(Stage primaryStage) {
+        EffortLoggerHomePage effortLoggerHomePage = new EffortLoggerHomePage();
+        Stage clockStage = new Stage();
+        clockStage.setTitle("EffortLogger Home Page");
+
+        // Call the start method of EffortLoggerClock
+        effortLoggerHomePage.start(clockStage);
+
+        // Close the home page stage
+        primaryStage.close();
+    }
+    
+    
 }

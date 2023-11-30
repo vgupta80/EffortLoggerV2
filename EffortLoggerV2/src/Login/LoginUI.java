@@ -30,7 +30,7 @@ public class LoginUI extends Application {
 
         GridPane gridPane = createLoginPage(primaryStage);
 
-        Scene scene = new Scene(gridPane, 300, 200);
+        Scene scene = new Scene(gridPane, 500, 300);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -110,7 +110,7 @@ public class LoginUI extends Application {
 
         GridPane gridPane = createCreateAccountPage(createAccountStage);
 
-        Scene scene = new Scene(gridPane, 300, 200);
+        Scene scene = new Scene(gridPane, 600, 400);
         createAccountStage.setScene(scene);
         createAccountStage.initModality(Modality.WINDOW_MODAL);
         createAccountStage.show();
