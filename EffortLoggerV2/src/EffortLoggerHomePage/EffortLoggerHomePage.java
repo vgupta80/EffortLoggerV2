@@ -69,7 +69,7 @@ public class EffortLoggerHomePage extends Application {
         clockStage.setTitle("Planning Poker");
 
         // Call the start method of EffortLoggerClock
-        
+        planningPokerUI.start(clockStage);
 
         // Close the home page stage
         primaryStage.close();
