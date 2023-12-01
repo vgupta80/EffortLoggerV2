@@ -12,5 +12,5 @@ Rashmi Mulam
 Jack Gerraughty
 
 How To Use:
-clone the repository using the command: git clone <HTTP repo path>
+clone the repository using the command: git clone 
 run the main.java in package main 
