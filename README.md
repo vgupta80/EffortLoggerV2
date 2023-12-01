@@ -12,5 +12,5 @@ Rashmi Mulam
 Jack Gerraughty
 
 How To Use:
-clone the repository using the command: git clone 
+clone the repository using the command: git clone https://github.com/vgupta80/EffortLoggerV2.git
 run the main.java in package main 
