@@ -92,7 +92,8 @@ public class PlanningPokerUI extends Application {
         gridPane.setVgap(10);
 
         Label roundLabel = new Label("Round " + currentRound);
-        roundLabel.setStyle("-fx-font-size: 1.5em; -fx-font-weight: bold;");
+        roundLabel.setStyle("-fx-font-size: 1.5em; "
+        		+ "-fx-font-weight: bold;");
         gridPane.add(roundLabel, 0, 0, 3, 1);
 
         Label taskLabel = new Label("Enter Task Name:");
@@ -138,6 +139,9 @@ public class PlanningPokerUI extends Application {
         Button endGameButton = new Button("End Game");
         endGameButton.setStyle("-fx-background-color: #FF0000; -fx-text-fill: white;");
         endGameButton.setOnAction(e -> {
+            if (validateRoundInputs(taskNameField.getText())) {
+                taskNames.add(taskNameField.getText());
+            }
             writeEstimatesToCSV();
             showAlert("Game ended. Estimates recorded successfully.");
             primaryStage.close();
@@ -170,7 +174,7 @@ public class PlanningPokerUI extends Application {
     private void writeEstimatesToCSV() {
         try (Writer writer = new FileWriter(CSV_FILE_PATH, true)) {
             for (int i = 0; i < numberOfUsers; i++) {
-                StringBuilder line = new StringBuilder(projectName + "," + taskNames.get(i) + ",Round " + currentRound);
+                StringBuilder line = new StringBuilder(projectName + "," + taskNames.get(0) + ",Round " + currentRound);
                 for (int estimate : userEstimates.get(i)) {
                     line.append(",").append(estimate);
                 }
